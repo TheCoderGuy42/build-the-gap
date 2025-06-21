@@ -7,7 +7,7 @@ if (typeof chrome !== "undefined" && chrome.tabs) {
   // @ts-ignore
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentUrl = tabs[0]?.url || "";
-    const targetUrl = `https://localhost:3000?from=${encodeURIComponent(currentUrl)}`; // Change to your deployed site
+    const targetUrl = `localhost:3000/api/link/${encodeURIComponent(currentUrl)}`; // Change to your deployed site
     // @ts-ignore
     chrome.tabs.create({ url: targetUrl });
     window.close(); // Close the popup after opening the tab
@@ -15,7 +15,7 @@ if (typeof chrome !== "undefined" && chrome.tabs) {
 } else {
   // Fallback for non-Chrome environments
   const currentUrl = window.location.href;
-  const targetUrl = `https://localhost:3000?from=${encodeURIComponent(currentUrl)}`;
+  const targetUrl = `localhost:3000/api/link/${encodeURIComponent(currentUrl)}`;
   window.open(targetUrl, "_blank");
   window.close();
 }
