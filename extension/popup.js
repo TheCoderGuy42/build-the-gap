@@ -1,9 +1,14 @@
 // This script runs as soon as the popup opens
 
+// ignore the chrome errors, chrome is globally defined in the extension context
+
+// @ts-ignore
 if (typeof chrome !== "undefined" && chrome.tabs) {
+  // @ts-ignore
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentUrl = tabs[0]?.url || "";
     const targetUrl = `https://localhost:3000?from=${encodeURIComponent(currentUrl)}`; // Change to your deployed site
+    // @ts-ignore
     chrome.tabs.create({ url: targetUrl });
     window.close(); // Close the popup after opening the tab
   });
