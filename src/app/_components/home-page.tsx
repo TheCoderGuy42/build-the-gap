@@ -46,8 +46,8 @@ export function HomePage() {
   const handleHtml = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       console.log("trying url " + e.currentTarget.value!);
-      new URL(e.currentTarget.value!);
-    } catch (_) {
+      new URL(e.currentTarget.value);
+    } catch {
       console.log("invalid url");
       return;
     }
