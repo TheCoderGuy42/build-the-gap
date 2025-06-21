@@ -15,62 +15,85 @@ export function HomePage() {
   const { mutateAsync: getPresignedUrlAsync } =
     api.s3.getPresignedUrl.useMutation();
 
-  const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation({
-    onError(error) {
-      toast.error("This error occured during pdf processing " + error);
-    },
-  });
+  const {
+    mutateAsync: addPdfAsync,
+    isPending: isPdfLoading,
+    isSuccess: pdfLoaded,
+  } = api.pdf.add.useMutation();
 
-  const { mutateAsync: addHtmlAsync } = api.html.add.useMutation();
+  const {
+    mutateAsync: addHtmlAsync,
+    isPending: isHtmlLoading,
+    isSuccess: htmlLoaded,
+  } = api.html.add.useMutation();
 
   const handlePdf = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files![0];
-
     if (!file) {
       toast("no file selected!");
       return;
     }
+
     const filename = file.name;
     const contentType = file.type;
 
-    const { signedUrl, key } = await getPresignedUrlAsync({
-      filename: filename,
-      contentType: contentType,
+    const processingPromise = (async () => {
+      const { signedUrl, key } = await getPresignedUrlAsync({
+        filename: file.name,
+        contentType: file.type,
+      });
+      await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+      await addPdfAsync({ s3Key: key });
+    })();
+
+    toast.promise(processingPromise, {
+      loading: "Processing PDF...",
+      success: "PDF processed!",
+      error: (err) => `PDF processing failed: ${err.message}`, // You can use a function for dynamic messages
     });
-
-    const uploadResponse = await fetch(signedUrl, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-
-    const quiz = await addPdfAsync({ s3Key: key });
-
-    console.log(quiz);
   };
 
   const handleHtml = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.currentTarget.value;
     try {
-      console.log("trying url " + e.currentTarget.value);
-      new URL(e.currentTarget.value);
+      console.log("trying url " + url);
+      new URL(url);
     } catch {
       console.log("invalid url");
       return;
     }
 
-    console.log("loading quiz " + e.currentTarget.value);
-    const quiz = await addHtmlAsync(e.currentTarget.value);
-
-    console.log(quiz);
+    toast.promise(addHtmlAsync(url), {
+      loading: "Processing html...",
+      success: "html processed!",
+      error: (err) => `html processing failed: ${err.message}`,
+    });
   };
 
   return (
     <>
       <Toaster position="bottom-right" />
-      <div className="flex flex-row gap-3 border">
-        <Input type="file" id="picture" onChange={handlePdf} />
-        <Input type="text" placeholder="input link here" onInput={handleHtml} />
-        <AuthButton />
+      <div className="m-4 flex flex-row gap-3">
+        <Input
+          type="file"
+          id="picture"
+          onChange={handlePdf}
+          className="w-auto"
+        />
+        <Input
+          type="text"
+          placeholder="input link here"
+          onInput={handleHtml}
+          className="flex-grow"
+        />
+
+        <div className="justify-end">
+          <AuthButton />
+        </div>
       </div>
     </>
   );
