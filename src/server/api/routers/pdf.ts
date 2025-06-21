@@ -58,9 +58,12 @@ export const pdfRouter = createTRPCRouter({
           code: "PARSE_ERROR",
         });
       }
-      const quizJson = JSON.parse(quizText);
-      const quiz = quizJson.items;
       console.log(quizText);
+      console.log("lbkuiygyt");
+
+      const quizJson = JSON.parse(quizText);
+
+      const quiz = quizJson.items;
 
       // const newQuiz = await ctx.db.quiz.create({
       //   data: quiz,
