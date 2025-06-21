@@ -5,6 +5,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "~/env.js";
 import { TRPCError } from "@trpc/server";
+import { aiService } from "./gemini";
 
 const s3Client = new S3Client({
   region: env.AWS_S3_REGION,
@@ -16,7 +17,7 @@ const s3Client = new S3Client({
 
 export const pdfRouter = createTRPCRouter({
   add: publicProcedure
-    .input(z.object({ filename: z.string(), s3Key: z.string() }))
+    .input(z.object({ s3Key: z.string() }))
     .mutation(async ({ input }) => {
       const command = new GetObjectCommand({
         Bucket: env.AWS_S3_BUCKET_NAME,
@@ -32,6 +33,8 @@ export const pdfRouter = createTRPCRouter({
       const byteArray = await s3Object.Body.transformToByteArray();
       const fileBuffer = Buffer.from(byteArray).toString("base64");
 
-      // const processedPdf = aiService.generateContent(fileBuffer)
+      const processedPdf = aiService.generateQuiz(fileBuffer);
+
+      return processedPdf;
     }),
 });

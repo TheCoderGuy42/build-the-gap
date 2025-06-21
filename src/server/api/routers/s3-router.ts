@@ -20,16 +20,14 @@ export const s3Router = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const key = `uploads/${uuid()}-${input.filename.replace(/\s+/g, "-")}`;
 
-      const signedUrl = await (async () => {
-        const command = new PutObjectCommand({
-          Bucket: env.AWS_S3_BUCKET_NAME,
-          Key: key,
-          ContentType: input.contentType,
-        });
+      const command = new PutObjectCommand({
+        Bucket: env.AWS_S3_BUCKET_NAME,
+        Key: key,
+        ContentType: input.contentType,
+      });
 
-        return await getSignedUrl(s3Client, command, {
-          expiresIn: 60 * 5,
-        });
+      const signedUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 60 * 5,
       });
 
       return {
