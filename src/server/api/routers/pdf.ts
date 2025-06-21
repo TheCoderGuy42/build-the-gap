@@ -55,41 +55,17 @@ export const pdfRouter = createTRPCRouter({
       const response = processedPdf.greeting;
       console.log("Full response:", JSON.stringify(response, null, 2));
 
-      // The Gemini API with structured output returns data directly, not as text
       let quizData;
       if (response.text) {
-        // If it's text, parse it
         quizData = JSON.parse(response.text);
-      } else if (
-        response.candidates &&
-        response.candidates[0]?.content?.parts?.[0]?.text
-      ) {
-        // Alternative response structure
-        quizData = JSON.parse(response.candidates[0].content.parts[0].text);
-      } else {
-        console.error("Unexpected response structure:", response);
-        throw new TRPCError({
-          message: "Unexpected AI response format",
-          code: "PARSE_ERROR",
-        });
-      }
-
-      if (!quizData) {
-        throw new TRPCError({
-          message: "No quiz data returned by the AI",
-          code: "PARSE_ERROR",
-        });
       }
 
       console.log("Quiz data:", quizData);
-
-      // If the response is already an array (due to structured output), use it directly
-      const quiz = Array.isArray(quizData) ? quizData : quizData.items;
 
       // const newQuiz = await ctx.db.quiz.create({
       //   data: quiz,
       // });
 
-      return quiz;
+      return quizData;
     }),
 });
