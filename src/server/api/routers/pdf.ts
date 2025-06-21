@@ -20,20 +20,6 @@ const s3Client = new S3Client({
   },
 });
 
-interface QuizItem {
-  questionToAsk: string;
-  answers: string[];
-  correctAnswer: string;
-}
-
-interface QuizResponse {
-  items: QuizItem[];
-}
-
-interface GeminiResponse {
-  text?: string;
-}
-
 export const pdfRouter = createTRPCRouter({
   add: protectedProcedure
     .input(z.object({ s3Key: z.string() }))
@@ -72,7 +58,7 @@ export const pdfRouter = createTRPCRouter({
           code: "PARSE_ERROR",
         });
       }
-      const quizJson: QuizResponse = JSON.parse(quizText);
+      const quizJson = JSON.parse(quizText);
       const quiz = quizJson.items;
       console.log(quiz);
 
