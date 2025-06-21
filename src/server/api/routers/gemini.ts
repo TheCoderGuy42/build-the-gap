@@ -1,31 +1,41 @@
 import {
-  z
-} from "zod";
-import {
   GoogleGenAI, Type
 } from "@google/genai";
 import type {
   Part
 } from "@google/genai";
 
-import {
-  createTRPCRouter,
-  publicProcedure
-} from "~/server/api/trpc";
-
 const ai = new GoogleGenAI({
   apiKey: "AIzaSyCtR__UlBpYtNKt0h5TSiKFu6v_1l-MCjU"
 });
 
 const prompt_text = `
-I will provide you with a base64 encoded string representing a PDF document. Your task is to:
+You will be provided with a PDF document. Your goal is to generate a quiz based on the contents of the PDF, with 4 multiple choice answers for each question. Below are some examples of the expected output:
 
-1. Decode the base64 string into its PDF format.
-2. Extract the text content from the PDF document.
-3. Analyze the content to generate a quiz based on the material found in the document.
-4. For each question, provide 4 multiple choice answers. The answers should be plausible and relevant to the material.
-
-Please ensure that the quiz questions are directly related to the content of the PDF and that the correct answer is one of the choices provided.
+{
+"items": [
+{
+"questionToAsk": "What is 2+2?",
+"answers": [
+"1",
+"3",
+"4",
+"9"
+],
+"correctAnswer": "4"
+},
+{
+"questionToAsk": "What is 12x12?",
+"answers": [
+"96",
+"144",
+"34",
+"2"
+],
+"correctAnswer": "144"
+}
+]
+}
 `;
 
 export const aiService = {
@@ -42,7 +52,7 @@ export const aiService = {
     };
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: [{ role: "user", parts: [pdf, prompt] }],
       config: {
         responseMimeType: "application/json",
@@ -51,7 +61,7 @@ export const aiService = {
           items: {
             type: Type.OBJECT,
             properties: {
-              question: {
+              questionToAsk: {
                 type: Type.STRING,
               },
               answers: {
@@ -60,8 +70,11 @@ export const aiService = {
                   type: Type.STRING,
                 },
               },
+              correctAnswer: {
+                type: Type.STRING
+              }
             },
-            propertyOrdering: ["question", "answers"],
+            propertyOrdering: ["question", "answers", "correctAnswer"],
           },
           },
       },
