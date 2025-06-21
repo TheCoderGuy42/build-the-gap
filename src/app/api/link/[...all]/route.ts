@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { all: string[] } },
+  { params }: { params : Promise<{ all: string[] }> },
 ) {
+
+
+  const resolvedParams = await params;
   // Your logic here
-  return NextResponse.json({ message: "Link opened!", params });
+  return NextResponse.json({ message: "Link opened!", resolvedParams });
 }
