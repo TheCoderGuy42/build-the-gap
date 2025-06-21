@@ -1,9 +1,18 @@
 "use client";
 
+//import { signOut } from "better-auth/api";
+import { useState } from "react";
+import { useSession } from "~/lib/auth-client";
+import { signIn } from "~/lib/auth-client";
+import { signOut } from "~/lib/auth-client";
+
 import { api } from "~/trpc/react";
 import toast, { Toaster } from "react-hot-toast";
 
 export function HomePage() {
+  const session = useSession();
+  console.log(session);
+
   const { mutateAsync: getPresignedUrlAsync } =
     api.s3.getPresignedUrl.useMutation();
   const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation();
@@ -36,11 +45,29 @@ export function HomePage() {
 
   return (
     <>
-      <Toaster />
-
       <div className="flex h-50 w-screen items-center justify-center bg-red-400">
-        <input type="file" placeholder="input pdf here" onChange={handlePdf} />
+        <input type="file" placeholder="input pdf here" />
       </div>
+
+      <button
+        onClick={() => {
+          signIn.social({ provider: "google" });
+          console.log(session);
+        }}
+        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Sign In with Google
+      </button>
+
+      <button
+        onClick={() => {
+          signOut();
+          console.log(session);
+        }}
+        className="rounded bg-red-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Sign Out
+      </button>
     </>
   );
 }
