@@ -11,6 +11,10 @@ import toast, { Toaster } from "react-hot-toast";
 
 export function HomePage() {
   const session = useSession();
+  const isUserSignedIn = session.data ? true : false;
+  if (isUserSignedIn) { 
+    const user = session.data?.user;
+  }
   console.log(session);
 
   const { mutateAsync: getPresignedUrlAsync } =
@@ -46,9 +50,20 @@ export function HomePage() {
   return (
     <>
       <div className="flex h-50 w-screen items-center justify-center bg-red-400">
-        <input type="file" placeholder="input pdf here" />
+        <input type="file" placeholder="input pdf here" onChange={handlePdf} />
       </div>
+      {isUserSignedIn ? 
 
+            <button
+        onClick={() => {
+          signOut();
+          console.log(session);
+        }}
+        className="rounded bg-red-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Sign Out
+      </button>
+      :
       <button
         onClick={() => {
           signIn.social({ provider: "google" });
@@ -58,16 +73,9 @@ export function HomePage() {
       >
         Sign In with Google
       </button>
+}
 
-      <button
-        onClick={() => {
-          signOut();
-          console.log(session);
-        }}
-        className="rounded bg-red-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        Sign Out
-      </button>
+
     </>
   );
 }
