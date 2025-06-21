@@ -14,7 +14,13 @@ import { Input } from "~/components/ui/input";
 export function HomePage() {
   const { mutateAsync: getPresignedUrlAsync } =
     api.s3.getPresignedUrl.useMutation();
-  const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation();
+
+  const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation({
+    onError(error) {
+      toast.error("This error occured during pdf processing " + error);
+    },
+  });
+
   const { mutateAsync: addHtmlAsync } = api.html.add.useMutation();
 
   const handlePdf = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +66,7 @@ export function HomePage() {
 
   return (
     <>
+      <Toaster position="bottom-right" />
       <div className="flex flex-row gap-3 border">
         <Input type="file" id="picture" onChange={handlePdf} />
         <Input type="text" placeholder="input link here" onInput={handleHtml} />
