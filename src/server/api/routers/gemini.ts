@@ -74,7 +74,7 @@ export const aiService = {
                 type: Type.STRING
               }
             },
-            propertyOrdering: ["question", "answers", "correctAnswer"],
+            propertyOrdering: ["questionToAsk", "answers", "correctAnswer"],
           },
           },
       },
