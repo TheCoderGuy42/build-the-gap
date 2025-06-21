@@ -35,6 +35,6 @@ export const pdfRouter = createTRPCRouter({
 
       const processedPdf = aiService.generateQuiz(fileBuffer);
 
-      return processedPdf;
+      return (await processedPdf).greeting.text;
     }),
 });
