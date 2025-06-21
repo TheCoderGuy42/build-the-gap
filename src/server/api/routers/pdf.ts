@@ -60,7 +60,7 @@ export const pdfRouter = createTRPCRouter({
       }
       const quizJson = JSON.parse(quizText);
       const quiz = quizJson.items;
-      console.log(quiz);
+      console.log(quizText);
 
       // const newQuiz = await ctx.db.quiz.create({
       //   data: quiz,
