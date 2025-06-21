@@ -6,6 +6,14 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+const s3Client = new S3Client({
+  region: env.AWS_S3_REGION,
+  credentials: {
+    accessKeyId: env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: env.AWS_S3_SECRET_ACCESS_KEY,
+  },
+});
+
 export const s3Router = createTRPCRouter({
   getPresignedUrl: publicProcedure
     .input(z.object({ filename: z.string(), contentType: z.string() }))
@@ -13,14 +21,6 @@ export const s3Router = createTRPCRouter({
       const key = `uploads/${uuid()}-${input.filename.replace(/\s+/g, "-")}`;
 
       const signedUrl = await (async () => {
-        const s3Client = new S3Client({
-          region: env.AWS_S3_REGION,
-          credentials: {
-            accessKeyId: env.AWS_S3_ACCESS_KEY_ID,
-            secretAccessKey: env.AWS_S3_SECRET_ACCESS_KEY,
-          },
-        });
-
         const command = new PutObjectCommand({
           Bucket: env.AWS_S3_BUCKET_NAME,
           Key: key,
