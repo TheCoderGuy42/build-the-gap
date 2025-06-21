@@ -41,7 +41,10 @@ export const pdfRouter = createTRPCRouter({
       const s3Object = await s3Client.send(command);
 
       if (!s3Object.Body) {
-        return;
+        return new TRPCError({
+          message: "s3 object wasn't reterived properly ",
+          code: "BAD_REQUEST",
+        });
       }
 
       const byteArray = await s3Object.Body.transformToByteArray();
@@ -50,20 +53,38 @@ export const pdfRouter = createTRPCRouter({
       const processedPdf = await aiService.generateQuizFromPdf(fileBuffer);
 
       const response = processedPdf.greeting;
-      const quizText = response.text;
+      console.log("Full response:", JSON.stringify(response, null, 2));
 
-      if (!quizText) {
-        return new TRPCError({
-          message: "No text returned by the ai",
+      // The Gemini API with structured output returns data directly, not as text
+      let quizData;
+      if (response.text) {
+        // If it's text, parse it
+        quizData = JSON.parse(response.text);
+      } else if (
+        response.candidates &&
+        response.candidates[0]?.content?.parts?.[0]?.text
+      ) {
+        // Alternative response structure
+        quizData = JSON.parse(response.candidates[0].content.parts[0].text);
+      } else {
+        console.error("Unexpected response structure:", response);
+        throw new TRPCError({
+          message: "Unexpected AI response format",
           code: "PARSE_ERROR",
         });
       }
-      console.log(quizText);
-      console.log("lbkuiygyt");
 
-      const quizJson = JSON.parse(quizText);
+      if (!quizData) {
+        throw new TRPCError({
+          message: "No quiz data returned by the AI",
+          code: "PARSE_ERROR",
+        });
+      }
 
-      const quiz = quizJson.items;
+      console.log("Quiz data:", quizData);
+
+      // If the response is already an array (due to structured output), use it directly
+      const quiz = Array.isArray(quizData) ? quizData : quizData.items;
 
       // const newQuiz = await ctx.db.quiz.create({
       //   data: quiz,
