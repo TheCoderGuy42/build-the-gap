@@ -1,7 +1,7 @@
 "use client";
 
 //import { signOut } from "better-auth/api";
-import { useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { useSession } from "~/lib/auth-client";
 import { signIn } from "~/lib/auth-client";
 import { signOut } from "~/lib/auth-client";
@@ -10,6 +10,7 @@ import { api } from "~/trpc/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import React from "react";
 
 export function HomePage() {
   const { mutateAsync: getPresignedUrlAsync } =
@@ -64,12 +65,33 @@ export function HomePage() {
     console.log(quiz);
   };
 
+  const handleHtmlLink = async (e: string) => {
+    try {
+      console.log("trying url " + e);
+      new URL(e);
+    } catch {
+      console.log("invalid url");
+      return;
+    }
+
+    console.log("loading quiz " + e);
+    const quiz = await addHtmlAsync(e);
+
+    console.log(quiz);
+  };
+
+  const linkInput = new URLSearchParams(window.location.search).get("link")!;
+
+  useEffect(() => {
+    handleHtmlLink(linkInput);
+  }, []);
+
   return (
     <>
       <Toaster position="bottom-right" />
       <div className="flex flex-row gap-3 border">
         <Input type="file" id="picture" onChange={handlePdf} />
-        <Input type="text" placeholder="input link here" onInput={handleHtml} />
+        <Input type="text" placeholder="input link here" onInput={handleHtml} value={linkInput == null ? "" : linkInput} />
         <AuthButton />
       </div>
     </>

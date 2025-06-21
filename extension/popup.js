@@ -15,7 +15,7 @@ if (typeof chrome !== "undefined" && chrome.tabs) {
 } else {
   // Fallback for non-Chrome environments
   const currentUrl = window.location.href;
-  const targetUrl = `localhost:3000/api/link/${encodeURIComponent(currentUrl)}`;
+  const targetUrl = `localhost:3000/?link=${encodeURIComponent(currentUrl)}`;
   window.open(targetUrl, "_blank");
   window.close();
 }
