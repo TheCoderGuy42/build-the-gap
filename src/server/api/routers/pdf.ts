@@ -60,9 +60,9 @@ export const pdfRouter = createTRPCRouter({
       const quiz = quizJson.items;
       console.log(quiz);
 
-      const newQuiz = await ctx.db.quiz.create({
-        data: quiz,
-      });
+      // const newQuiz = await ctx.db.quiz.create({
+      //   data: quiz,
+      // });
 
       return quiz;
     }),

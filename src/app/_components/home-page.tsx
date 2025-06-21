@@ -8,15 +8,10 @@ import { signOut } from "~/lib/auth-client";
 
 import { api } from "~/trpc/react";
 import toast, { Toaster } from "react-hot-toast";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 
 export function HomePage() {
-  const session = useSession();
-  const isUserSignedIn = session.data ? true : false;
-  if (isUserSignedIn) {
-    const user = session.data?.user;
-  }
-  console.log(session);
-
   const { mutateAsync: getPresignedUrlAsync } =
     api.s3.getPresignedUrl.useMutation();
   const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation();
@@ -50,11 +45,11 @@ export function HomePage() {
 
   const handleHtml = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      console.log("trying url " + e.currentTarget.value!)
+      console.log("trying url " + e.currentTarget.value!);
       new URL(e.currentTarget.value!);
     } catch (_) {
-      console.log("invalid url")
-      return
+      console.log("invalid url");
+      return;
     }
 
     console.log("loading quiz " + e.currentTarget.value);
@@ -65,31 +60,38 @@ export function HomePage() {
 
   return (
     <>
-      <div className="flex h-50 w-screen items-center justify-center bg-red-400">
-        <input type="file" placeholder="input pdf here" onChange={handlePdf} />
-        <input type="text" placeholder="input link here" onInput={handleHtml} />
+      <div className="flex flex-row gap-3 border">
+        <Input type="file" id="picture" onChange={handlePdf} />
+        <Input type="text" placeholder="input link here" onInput={handleHtml} />
+        <AuthButton />
       </div>
-      {isUserSignedIn ? (
-        <button
-          onClick={() => {
-            signOut();
-            console.log(session);
-          }}
-          className="rounded bg-red-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Sign Out
-        </button>
-      ) : (
-        <button
-          onClick={() => {
-            signIn.social({ provider: "google" });
-            console.log(session);
-          }}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Sign In with Google
-        </button>
-      )}
     </>
   );
 }
+
+const AuthButton = () => {
+  const session = useSession();
+  const isUserSignedIn = session.data ? true : false;
+  if (isUserSignedIn) {
+    const user = session.data?.user;
+  }
+  console.log(session);
+
+  return (
+    <>
+      {isUserSignedIn ? (
+        <Button variant="outline" onClick={() => signOut()}>
+          {" "}
+          sign out
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          onClick={() => signIn.social({ provider: "google" })}
+        >
+          sign in
+        </Button>
+      )}
+    </>
+  );
+};
