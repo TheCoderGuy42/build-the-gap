@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { pdfRouter } from "./routers/pdf";
 import { s3Router } from "./routers/s3-router";
+import { htmlRouter } from "./routers/html"
 
 /**
  * This is the primary router for your server.
@@ -9,6 +10,7 @@ import { s3Router } from "./routers/s3-router";
  */
 export const appRouter = createTRPCRouter({
   pdf: pdfRouter,
+  html: htmlRouter,
   s3: s3Router,
 });
 

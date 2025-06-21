@@ -20,6 +20,7 @@ export function HomePage() {
   const { mutateAsync: getPresignedUrlAsync } =
     api.s3.getPresignedUrl.useMutation();
   const { mutateAsync: addPdfAsync } = api.pdf.add.useMutation();
+  const { mutateAsync: addHtmlAsync } = api.html.add.useMutation();
 
   const handlePdf = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files![0];
@@ -47,10 +48,26 @@ export function HomePage() {
     console.log(quiz);
   };
 
+  const handleHtml = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      console.log("trying url " + e.currentTarget.value!)
+      new URL(e.currentTarget.value!);
+    } catch (_) {
+      console.log("invalid url")
+      return
+    }
+
+    console.log("loading quiz " + e.currentTarget.value);
+    const quiz = await addHtmlAsync(e.currentTarget.value!);
+
+    console.log(quiz);
+  };
+
   return (
     <>
       <div className="flex h-50 w-screen items-center justify-center bg-red-400">
         <input type="file" placeholder="input pdf here" onChange={handlePdf} />
+        <input type="text" placeholder="input link here" onInput={handleHtml} />
       </div>
       {isUserSignedIn ? (
         <button

@@ -10,7 +10,7 @@ const ai = new GoogleGenAI({
 });
 
 const prompt_text = `
-You will be provided with a PDF document. Your goal is to generate a quiz based on the contents of the PDF, with 4 multiple choice answers for each question. Below are some examples of the expected output:
+You will be provided with a PDF or HTML document. Your goal is to generate a quiz based on the contents of the document, with 4 multiple choice answers for each question. Below are some examples of the expected output:
 
 {
 "items": [
@@ -38,23 +38,7 @@ You will be provided with a PDF document. Your goal is to generate a quiz based 
 }
 `;
 
-export const aiService = {
-  generateQuiz: async (b64pdf: string) => {
-    const pdf: Part = {
-      inlineData: {
-        mimeType: "application/pdf",
-        data: b64pdf
-      }
-    };
-
-    const prompt: Part = {
-      text: prompt_text
-    };
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [{ role: "user", parts: [pdf, prompt] }],
-      config: {
+const structuredOutputConfig = {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,
@@ -77,7 +61,36 @@ export const aiService = {
             propertyOrdering: ["questionToAsk", "answers", "correctAnswer"],
           },
           },
-      },
+      };
+
+export const aiService = {
+  generateQuizFromPdf: async (b64pdf: string) => {
+    const pdf: Part = {
+      inlineData: {
+        mimeType: "application/pdf",
+        data: b64pdf
+      }
+    };
+
+    const prompt: Part = {
+      text: prompt_text
+    };
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [pdf, prompt] }],
+      config: structuredOutputConfig
+    });
+
+    return {
+      greeting: response
+    };
+  },
+  generateQuizFromHtml: async (website: string) => {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt_text + "\nBegin HTML document:\n" + website,
+      config: structuredOutputConfig
     });
 
     return {

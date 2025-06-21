@@ -46,7 +46,7 @@ export const pdfRouter = createTRPCRouter({
       const byteArray = await s3Object.Body.transformToByteArray();
       const fileBuffer = Buffer.from(byteArray).toString("base64");
 
-      const processedPdf = await aiService.generateQuiz(fileBuffer);
+      const processedPdf = aiService.generateQuiz(fileBuffer);
 
       const quizText = processedPdf.greeting.text;
 
