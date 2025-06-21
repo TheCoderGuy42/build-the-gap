@@ -45,6 +45,7 @@
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.3.1",
+    "uuid": "^11.1.0",
     "uuidv4": "^6.2.13",
     "zod": "^3.24.2"
   },

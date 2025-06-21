@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { env } from "../../../env";
-import { uuid } from "zod/v4";
+import { v4 as uuidv4 } from "uuid";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
@@ -17,8 +17,8 @@ const s3Client = new S3Client({
 export const s3Router = createTRPCRouter({
   getPresignedUrl: publicProcedure
     .input(z.object({ filename: z.string(), contentType: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const key = `uploads/${uuid()}-${input.filename.replace(/\s+/g, "-")}`;
+    .mutation(async ({ input }) => {
+      const key = `uploads/${uuidv4()}-${input.filename.replace(/\s+/g, "-")}`;
 
       const command = new PutObjectCommand({
         Bucket: env.AWS_S3_BUCKET_NAME,
