@@ -10,6 +10,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "~/env.js";
 import { TRPCError } from "@trpc/server";
 import { aiService } from "./gemini";
+import type { GenerateContentResponse } from "@google/genai";
 
 const s3Client = new S3Client({
   region: env.AWS_S3_REGION,
@@ -18,6 +19,20 @@ const s3Client = new S3Client({
     secretAccessKey: env.AWS_S3_SECRET_ACCESS_KEY,
   },
 });
+
+interface QuizItem {
+  questionToAsk: string;
+  answers: string[];
+  correctAnswer: string;
+}
+
+interface QuizResponse {
+  items: QuizItem[];
+}
+
+interface GeminiResponse {
+  text?: string;
+}
 
 export const pdfRouter = createTRPCRouter({
   add: protectedProcedure
@@ -48,7 +63,8 @@ export const pdfRouter = createTRPCRouter({
 
       const processedPdf = await aiService.generateQuizFromPdf(fileBuffer);
 
-      const quizText = processedPdf.greeting.text;
+      const response = processedPdf.greeting as GenerateContentResponse;
+      const quizText = response.text;
 
       if (!quizText) {
         return new TRPCError({
@@ -56,7 +72,7 @@ export const pdfRouter = createTRPCRouter({
           code: "PARSE_ERROR",
         });
       }
-      const quizJson = JSON.parse(quizText);
+      const quizJson: QuizResponse = JSON.parse(quizText);
       const quiz = quizJson.items;
       console.log(quiz);
 
