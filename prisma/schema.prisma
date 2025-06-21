@@ -12,7 +12,7 @@ datasource db {
 
 model Question {
   id            Int      @id @default(autoincrement())
-  question      String
+  questionToAsk String
   answers       String[]
   correctAnswer String
   quizId        Int
@@ -20,11 +20,11 @@ model Question {
 }
 
 model Quiz {
-    id        Int        @id @default(autoincrement())
-    title     String
-    questions Question[]
-    userId    String
-    User      User       @relation(fields: [userId], references: [id])
+  id        Int        @id @default(autoincrement())
+  title     String
+  questions Question[]
+  userId    String
+  User      User       @relation(fields: [userId], references: [id])
 }
 
 model User {

@@ -28,7 +28,7 @@ import { auth } from "../../lib/auth";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth.api.getSession({
     headers: opts.headers,
-  })
+  });
   return {
     db,
     session,
@@ -114,11 +114,11 @@ export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
     if (!ctx.session?.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED"});
+      throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     return next({
       ctx: {
-        user: ctx.session.user,
+        session: { ...ctx.session, user: ctx.session.user },
       },
     });
   });
