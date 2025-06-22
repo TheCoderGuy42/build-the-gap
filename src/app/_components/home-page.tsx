@@ -224,7 +224,7 @@ export function HomePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <BookOpen className="text-primary mx-auto mb-4 h-12 w-12" />
-            <CardTitle className="text-2xl">Welcome to QuizRizz</CardTitle>
+            <CardTitle className="text-2xl">Welcome to Inquizitive</CardTitle>
             <CardDescription>
               Sign in to create quizzes from PDFs and websites
             </CardDescription>
@@ -438,7 +438,7 @@ export function HomePage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
             <BookOpen className="text-primary h-8 w-8" />
-            <h1 className="text-2xl font-bold">QuizRizz</h1>
+            <h1 className="text-2xl font-bold">Inquizitive</h1>
           </div>
 
           <div className="flex items-center gap-4">
