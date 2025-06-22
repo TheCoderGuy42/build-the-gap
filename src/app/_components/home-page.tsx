@@ -218,6 +218,24 @@ export function HomePage() {
 
   const isSignedIn = !!session.data?.user;
 
+  const handleHtmlLink = async (e: string) => {
+    try {
+      new URL(e);
+    } catch {
+      return;
+    }
+
+    console.log("loading quiz " + e);
+    const quiz = await addHtmlAsync(e);
+
+    console.log(quiz);
+  };
+
+  useEffect(() => {
+    const linkInput = new URLSearchParams(window.location.search).get("link")!;
+    handleHtmlLink(linkInput);
+  }, []);
+
   if (!isSignedIn) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 dark:from-gray-900 dark:to-gray-800">
