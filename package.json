@@ -26,6 +26,7 @@
     "@better-auth/cli": "1.2.10",
     "@google/genai": "^1.6.0",
     "@prisma/client": "^6.5.0",
+    "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.69.0",
@@ -45,6 +46,7 @@
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.3.1",
+    "use-debounce": "^10.0.5",
     "uuid": "^11.1.0",
     "uuidv4": "^6.2.13",
     "zod": "^3.24.2"

@@ -55,17 +55,54 @@ export const pdfRouter = createTRPCRouter({
       const response = processedPdf.greeting;
       console.log("Full response:", JSON.stringify(response, null, 2));
 
-      let quizData;
+      let questionsData;
       if (response.text) {
-        quizData = JSON.parse(response.text);
+        questionsData = JSON.parse(response.text);
+      } else if (
+        response.candidates &&
+        response.candidates[0]?.content?.parts?.[0]?.text
+      ) {
+        questionsData = JSON.parse(
+          response.candidates[0].content.parts[0].text,
+        );
+      } else {
+        throw new TRPCError({
+          message: "Unexpected AI response format",
+          code: "PARSE_ERROR",
+        });
       }
 
-      console.log("Quiz data:", quizData);
+      console.log("Questions data:", questionsData);
 
-      // const newQuiz = await ctx.db.quiz.create({
-      //   data: quiz,
-      // });
+      if (
+        !questionsData ||
+        !Array.isArray(questionsData) ||
+        questionsData.length === 0
+      ) {
+        throw new TRPCError({
+          message: "No valid questions returned by the AI",
+          code: "PARSE_ERROR",
+        });
+      }
 
-      return quizData;
+      // Create Quiz with nested Questions
+      const newQuiz = await ctx.db.quiz.create({
+        data: {
+          title: `Quiz from PDF - ${new Date().toISOString()}`,
+          userId: userId,
+          questions: {
+            create: questionsData.map((q: any) => ({
+              questionToAsk: q.questionToAsk,
+              answers: q.answers,
+              correctAnswer: q.correctAnswer,
+            })),
+          },
+        },
+        include: {
+          questions: true,
+        },
+      });
+
+      return newQuiz;
     }),
 });
