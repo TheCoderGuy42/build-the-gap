@@ -7,8 +7,5 @@
     "default_popup": "hello.html",
     "default_icon": "icon.png"
   },
-  "permissions": ["tabs"],
-  "host_permissions": [
-    "https://yourwebapp.com/*"
-  ]
+  "permissions": ["tabs"]
 }
