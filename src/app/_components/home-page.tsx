@@ -80,18 +80,16 @@ export function HomePage() {
     console.log(quiz);
   };
 
-  const linkInput = new URLSearchParams(window.location.search).get("link")!;
-
   useEffect(() => {
-    handleHtmlLink(linkInput);
+    handleHtmlLink(new URLSearchParams(window.location.search).get("link")!);
   }, []);
-
+  
   return (
     <>
       <Toaster position="bottom-right" />
       <div className="flex flex-row gap-3 border">
         <Input type="file" id="picture" onChange={handlePdf} />
-        <Input type="text" placeholder="input link here" onInput={handleHtml} value={linkInput == null ? "" : linkInput} />
+        <Input type="text" placeholder="input link here" onInput={handleHtml} id="linkInputBox" />
         <AuthButton />
       </div>
     </>
