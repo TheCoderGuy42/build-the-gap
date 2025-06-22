@@ -10,6 +10,7 @@ import { api } from "~/trpc/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { useDebounce } from "use-debounce";
 
 export function HomePage() {
   const { mutateAsync: getPresignedUrlAsync } =
@@ -57,7 +58,7 @@ export function HomePage() {
     });
   };
 
-  const handleHtml = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHtml = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     const url = e.currentTarget.value;
     try {
       console.log("trying url " + url);
@@ -66,6 +67,8 @@ export function HomePage() {
       console.log("invalid url");
       return;
     }
+
+    e.currentTarget.value = "";
 
     toast.promise(addHtmlAsync(url), {
       loading: "Processing html...",
@@ -86,8 +89,13 @@ export function HomePage() {
         />
         <Input
           type="text"
-          placeholder="input link here"
-          onInput={handleHtml}
+          placeholder="input link here   (press enter to submit)"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleHtml(e);
+            }
+          }}
           className="flex-grow"
         />
 
