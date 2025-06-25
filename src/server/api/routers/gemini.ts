@@ -4,9 +4,10 @@ import {
 import type {
   Part
 } from "@google/genai";
+import { env } from "../../../env";
 
 const ai = new GoogleGenAI({
-  apiKey: "AIzaSyCtR__UlBpYtNKt0h5TSiKFu6v_1l-MCjU"
+  apiKey: env.GEMINI_API_KEY
 });
 
 const prompt_text = `
